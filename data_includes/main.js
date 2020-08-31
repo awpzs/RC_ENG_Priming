@@ -3,7 +3,8 @@ PennController.ResetPrefix(null) // Shorten command names (keep this line here)
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/audios/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
 
-Sequence( "information", "identification", "initRecorder", "prac1_start", "prac_1", "prac2_start", "prac_2", "exp_start", "exp", "send", "final" )
+//Sequence( "information", "identification", "recording_information", "initRecorder", "prac1_start", "prac_1", "prac2_start", "prac_2", "exp_start", "exp", "send", "final" )
+Sequence( "recording_information", "initRecorder", "prac", "send", "final" )
 
 newTrial( "information" ,
     newHtml("information", "information.html")
@@ -54,51 +55,57 @@ newTrial( "identification" ,
 //  .log( "ID"     , getVar("ID")    )
 //)
 
-InitiateRecorder("http://myserver/saveVoiceRecordings.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
-
-newTrial( "prac1_start" ,
-    newText("<p>Please listen to the audio description, and select the described object by clicking on it with your mouse.</p>")
-        .print()
-    ,
-    newButton("Continue")
+newTrial("recording_information" ,
+    newText("<p><strong>Important:</strong></p><p>Your responses will be audio recorded during the experiment. Please complete this experiment in a quiet place, and make your voice loud and clear.</p><p>Please stay focused during the experiment, and finish it in one go. You will be able to take a brief break (1-2 mins), where specified.</p><p>You will not be able to return to this study if you closed or refreshed this webpage.</p>")
         .settings.center()
         .print()
-        .wait()
+    ,
+    newButton("Continua")
+        .settings.center()
+        .print()
+        .wait()    
 )
-.log( "ID" , getVar("ID") )
+
+InitiateRecorder("https://langprolab.stir.ac.uk/pcibex/index.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
 
 Template(
     GetTable("prac.csv")
             .setGroupColumn("list") , variable =>
-    newTrial( "prac_1" ,
+    newTrial( "prac" ,
+            newText("<p>Please click on the object that’s just been described with your mouse.</p><p>Once you’ve selected an object, you cannot change your response.</p><p>Please listen to descriptions carefully and choose the object accurately.</p>")
+                .settings.center()
+                .print()
+                .wait(2000)
+            ,
             newAudio("description", variable.audio)
                 .play()
             ,
             newImage("1", variable.pos1)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("2", variable.pos2)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("3", variable.pos3)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("4", variable.pos4)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("5", variable.pos5)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("6", variable.pos6)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("7", variable.pos7)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("8", variable.pos8)
-                .size(250,250)
+                .size(245,245)
             ,
             newCanvas(1000,550)
+                .center()
                 .add(0, 0, getImage("1") )
                 .add(250, 0, getImage("2") )
                 .add(500, 0, getImage("3") )
@@ -117,110 +124,92 @@ Template(
             ,
             getAudio("description")
                 .wait("first")
-
-  )
-  .log( "ID"     , getVar("ID")    )
-)            
-
-newTrial( "prac2_start" ,
-    newText("<p>Now please describe the object in the box by speaking aloud.</p><p>After describing the object, press the <strong>Proceed</strong> button to continue.</p>")
-        .print()
-    ,
-    newButton("Continue")
-        .settings.center()
-        .print()
-        .wait()
-)
-.log( "ID" , getVar("ID") )
-
-Template(
-    GetTable("prac.csv")
-            .setGroupColumn("list") , variable =>
-    newTrial( "prac_2" ,
-        newVar("box", variable.boxPos)
-        ,
-        newMediaRecorder("recorder", "audio")
-            .record()
-        ,
-        newImage("1", variable.pos1)
-            .size(250,250)
-        ,
-        getVar("box").test.is("1")
-            .success(getImage("1").css("border", "solid 2px black"))
-            .failure(getImage("1"))
-        ,
-        newImage("2", variable.pos2)
-            .size(250,250)
-        ,
-        getVar("box").test.is("2")
-            .success(getImage("2").css("border", "solid 2px black"))
-            .failure(getImage("2"))
-        ,
-        newImage("3", variable.pos3)
-            .size(250,250)
-        ,
-        getVar("box").test.is("3")
-            .success(getImage("3").css("border", "solid 2px black"))
-            .failure(getImage("3"))
-        ,
-        newImage("4", variable.pos4)
-            .size(250,250)
-        ,
-        getVar("box").test.is("4")
-            .success(getImage("4").css("border", "solid 2px black"))
-            .failure(getImage("4"))
-        ,
-        newImage("5", variable.pos5)
-            .size(250,250)
-        ,
-        getVar("box").test.is("5")
-            .success(getImage("5").css("border", "solid 2px black"))
-            .failure(getImage("5"))
-        ,
-        newImage("6", variable.pos6)
-            .size(250,250)
-        ,
-        getVar("box").test.is("6")
-            .success(getImage("6").css("border", "solid 2px black"))
-            .failure(getImage("6"))
-        ,
-        newImage("7", variable.pos7)
-            .size(250,250)
-        ,
-        getVar("box").test.is("7")
-            .success(getImage("7").css("border", "solid 2px black"))
-            .failure(getImage("7"))
-        ,
-        newImage("8", variable.pos8)
-            .size(250,250)
-        ,
-        getVar("box").test.is("8")
-            .success(getImage("8").css("border", "solid 2px black"))
-            .failure(getImage("8"))
-        ,
-        newButton("proc", "Proceed")
-        ,
-        newCanvas(1000,550)
-            .add(0, 0, getImage("1") )
-            .add(250, 0, getImage("2") )
-            .add(500, 0, getImage("3") )
-            .add(750, 0, getImage("4") )
-            .add(0, 250, getImage("5") )
-            .add(250, 250, getImage("6") )
-            .add(500, 250, getImage("7") )
-            .add(750, 250, getImage("8") )
-            .add(495, 505, getButton("proc"))
-            .print()
-        ,
-        newSelector()
-            .add(getButton("proc"))
-            .log()
-            .wait()
-        ,
-        getVoiceRecorder("recorder")
-            .stop()
-        ,
-        getMediaRecorder("recorder").test.recorded()
+            ,
+            clear()
+            ,
+            newText("<p>Now it’s your turn - please describe the object that’s in the box, so your listener can identify the object.</p>")
+                .settings.center()
+                .print()
+                .wait(2000)
+            ,
+            newVar("box", variable.boxPos)
+            ,
+            newMediaRecorder("recorder", "audio")
+                .record()
+            ,
+            getVar("box").test.is("1")
+                .success(getImage("1").css("border", "solid 1px black"))
+                .failure(getImage("1"))
+            ,
+            getVar("box").test.is("2")
+                .success(getImage("2").css("border", "solid 1px black"))
+                .failure(getImage("2"))
+            ,
+            getVar("box").test.is("3")
+                .success(getImage("3").css("border", "solid 1px black"))
+                .failure(getImage("3"))
+            ,
+            getVar("box").test.is("4")
+                .success(getImage("4").css("border", "solid 1px black"))
+                .failure(getImage("4"))
+            ,
+            getVar("box").test.is("5")
+                .success(getImage("5").css("border", "solid 1px black"))
+                .failure(getImage("5"))
+            ,
+            getVar("box").test.is("6")
+                .success(getImage("6").css("border", "solid 1px black"))
+                .failure(getImage("6"))
+            ,
+            getVar("box").test.is("7")
+                .success(getImage("7").css("border", "solid 1px black"))
+                .failure(getImage("7"))
+            ,
+            getVar("box").test.is("8")
+                .success(getImage("8").css("border", "solid 1px black"))
+                .failure(getImage("8"))
+            ,
+            newButton("proc", "Proceed")
+            ,
+            newCanvas(1000,550)
+                .add(0, 0, getImage("1") )
+                .add(250, 0, getImage("2") )
+                .add(500, 0, getImage("3") )
+                .add(750, 0, getImage("4") )
+                .add(0, 250, getImage("5") )
+                .add(250, 250, getImage("6") )
+                .add(500, 250, getImage("7") )
+                .add(750, 250, getImage("8") )
+                .add(495, 505, getButton("proc"))
+                .print()
+            ,
+            newSelector()
+                .add(getButton("proc"))
+                .log()
+                .wait()
+            ,
+            getMediaRecorder("recorder")
+                .stop()
+            ,
+            getMediaRecorder("recorder").test.recorded()
+                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print())
+            ,
+            clear()
+            ,
+            newText("You may say “chequered green fork” or “green chequered fork”, but avoid using spatial descriptions like “the green fork on the top row”; the objects may be placed in different positions for your listener.</p>")
+                .settings.after(newText(variable.targetPC).settings.bold())
+                .settings.after(newText(" or "))
+                .settings.after(newText(variable.targetCP).settings.bold())
+                .settings.after(newText(", but avoid using spatial descriptions like"))
+                .settings.after(newText(variable.targetSP).settings.bold())
+                .settings.after(newText("; the objects may be placed in different positions for your listener."))
+                .settings.bold()
+                .settings.center()
+                .print()
+            ,
+            getButton("proc")
+                .print()
+                .wait()
     )
   .log( "ID"     , getVar("ID")    )
 )
@@ -244,30 +233,31 @@ Template(
                 .play()
             ,
             newImage("1", variable.pos1)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("2", variable.pos2)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("3", variable.pos3)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("4", variable.pos4)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("5", variable.pos5)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("6", variable.pos6)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("7", variable.pos7)
-                .size(250,250)
+                .size(245,245)
             ,
             newImage("8", variable.pos8)
-                .size(250,250)
+                .size(245,245)
             ,
             newCanvas(1000,550)
+                .center()
                 .add(0, 0, getImage("1") )
                 .add(250, 0, getImage("2") )
                 .add(500, 0, getImage("3") )
@@ -295,35 +285,35 @@ Template(
                 .record()
             ,
             getVar("box").test.is("1")
-                .success(getImage("1").css("border", "solid 2px black"))
+                .success(getImage("1").css("border", "solid 1px black"))
                 .failure(getImage("1"))
             ,
             getVar("box").test.is("2")
-                .success(getImage("2").css("border", "solid 2px black"))
+                .success(getImage("2").css("border", "solid 1px black"))
                 .failure(getImage("2"))
             ,
             getVar("box").test.is("3")
-                .success(getImage("3").css("border", "solid 2px black"))
+                .success(getImage("3").css("border", "solid 1px black"))
                 .failure(getImage("3"))
             ,
             getVar("box").test.is("4")
-                .success(getImage("4").css("border", "solid 2px black"))
+                .success(getImage("4").css("border", "solid 1px black"))
                 .failure(getImage("4"))
             ,
             getVar("box").test.is("5")
-                .success(getImage("5").css("border", "solid 2px black"))
+                .success(getImage("5").css("border", "solid 1px black"))
                 .failure(getImage("5"))
             ,
             getVar("box").test.is("6")
-                .success(getImage("6").css("border", "solid 2px black"))
+                .success(getImage("6").css("border", "solid 1px black"))
                 .failure(getImage("6"))
             ,
             getVar("box").test.is("7")
-                .success(getImage("7").css("border", "solid 2px black"))
+                .success(getImage("7").css("border", "solid 1px black"))
                 .failure(getImage("7"))
             ,
             getVar("box").test.is("8")
-                .success(getImage("8").css("border", "solid 2px black"))
+                .success(getImage("8").css("border", "solid 1px black"))
                 .failure(getImage("8"))
             ,
             newButton("proc", "Proceed")
@@ -345,11 +335,11 @@ Template(
                 .log()
                 .wait()
             ,
-            getVoiceRecorder("recorder")
+            getMediaRecorder("recorder")
                 .stop()
             ,
             getMediaRecorder("recorder").test.recorded()
-
+                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print())
     )
   .log( "ID"     , getVar("ID")    )
 )          

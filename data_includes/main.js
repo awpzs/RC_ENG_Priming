@@ -47,7 +47,7 @@ newTrial("recording_information" ,
         .wait()    
 )
 
-InitiateRecorder("https://langprolab.stir.ac.uk/pcibex/index.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
+InitiateRecorder("https://langprolab/pcibex/index.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
 
 Template(
     GetTable("instructions.csv")
@@ -77,7 +77,7 @@ Template(
                 .print()
                 .wait()
             ,
-            getButton("cont")
+            getButton("listen")
                 .remove()
             ,
             newAudio("description", variable.audio)
@@ -130,10 +130,9 @@ Template(
             ,
             clear()
             ,
-            newText("<p>Now it’s your turn - please describe the object that’s in the box, so your listener can identify the object.</p><p>When you finished describing the object, click on “Proceed” to continue.</p>")
+            newText("<p>Now it’s your turn - please describe the object that’s in the box, so your listener can identify the object.</p><p>When you finished describing the object, click on “Proceed” to proceed.</p>")
                 .settings.center()
                 .print()
-                .wait(2000)
             ,
             newVar("box", variable.boxPos)
             ,
@@ -201,16 +200,20 @@ Template(
             ,
             newText("You may say ")
                 .settings.after(newText(variable.targetPC).settings.bold())
-                .settings.after(newText(" or "))
+                .settings.after(newText("&nbsp;or&nbsp;"))
                 .settings.after(newText(variable.targetCP).settings.bold())
-                .settings.after(newText(", but avoid using spatial descriptions like"))
+                .settings.after(newText(", but avoid using spatial descriptions like&nbsp;"))
                 .settings.after(newText(variable.targetSP).settings.bold())
-                .settings.after(newText("; the objects may be placed in different positions for your listener."))
-                .settings.bold()
+                .settings.after(newText(";"))
                 .settings.center()
                 .print()
             ,
-            getButton("proc")
+            newText("the objects may be placed in different positions for your listener.")
+                .settings.center()
+                .print()
+            ,
+            newButton("Continue")
+                .settings.center()
                 .print()
                 .wait()
     )
@@ -360,3 +363,4 @@ newTrial( "final" ,
     newButton("void")
         .wait()
 )
+

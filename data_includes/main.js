@@ -4,7 +4,7 @@ PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/m
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
 
 //Sequence( "information", "identification", "recording_information", "initRecorder", "prac1_start", "prac_1", "prac2_start", "prac_2", "exp_start", "exp", "send", "final" )
-Sequence( "recording_information", "initRecorder", "prac", "send", "final" )
+Sequence( "recording_information", "initRecorder", "instruction", "prac", "send", "final" )
 
 newTrial( "information" ,
     newHtml("information", "information.html")
@@ -36,31 +36,12 @@ newTrial( "identification" ,
 )
 .log( "ID" , getVar("ID") )
 
-//Template(
-//    GetTable("instruction.csv")
-//            , variable =>
-//    newTrial( "instruction" ,
-//        newHtml("information", variable.insPage)
-//            .print()
-//        ,
-//        newImage("example", variable.exImg)
-//            .settings.center()
-//            .print()
-//        ,
-//        newButton("Proceed")
-//            .settings.center()
-//            .print()
-//            .wait()
-//  )
-//  .log( "ID"     , getVar("ID")    )
-//)
-
 newTrial("recording_information" ,
     newText("<p><strong>Important:</strong></p><p>Your responses will be audio recorded during the experiment. Please complete this experiment in a quiet place, and make your voice loud and clear.</p><p>Please stay focused during the experiment, and finish it in one go. You will be able to take a brief break (1-2 mins), where specified.</p><p>You will not be able to return to this study if you closed or refreshed this webpage.</p>")
         .settings.center()
         .print()
     ,
-    newButton("Continua")
+    newButton("Continue")
         .settings.center()
         .print()
         .wait()    
@@ -69,13 +50,35 @@ newTrial("recording_information" ,
 InitiateRecorder("https://langprolab.stir.ac.uk/pcibex/index.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
 
 Template(
+    GetTable("instructions.csv")
+            , variable =>
+    newTrial( "instruction" ,
+        newHtml("information", variable.insPage)
+            .print()
+        ,
+        newButton("Continue")
+            .settings.center()
+            .print()
+            .wait()
+  )
+  .log( "ID"     , getVar("ID")    )
+)
+
+Template(
     GetTable("prac.csv")
             .setGroupColumn("list") , variable =>
     newTrial( "prac" ,
-            newText("<p>Please click on the object that’s just been described with your mouse.</p><p>Once you’ve selected an object, you cannot change your response.</p><p>Please listen to descriptions carefully and choose the object accurately.</p>")
+            newText("<p>Please click on “Listen” to listen to an audio, and then use your mouse to click on the object that’s just been described.</p><p>Once you’ve selected an object, you cannot change your response.</p><p>Please listen to descriptions carefully and choose the object accurately.</p>")
                 .settings.center()
                 .print()
-                .wait(2000)
+            ,
+            newButton("listen", "Listen")
+                .settings.center()
+                .print()
+                .wait()
+            ,
+            getButton("cont")
+                .remove()
             ,
             newAudio("description", variable.audio)
                 .play()
@@ -127,7 +130,7 @@ Template(
             ,
             clear()
             ,
-            newText("<p>Now it’s your turn - please describe the object that’s in the box, so your listener can identify the object.</p>")
+            newText("<p>Now it’s your turn - please describe the object that’s in the box, so your listener can identify the object.</p><p>When you finished describing the object, click on “Proceed” to continue.</p>")
                 .settings.center()
                 .print()
                 .wait(2000)
@@ -196,7 +199,7 @@ Template(
             ,
             clear()
             ,
-            newText("You may say “chequered green fork” or “green chequered fork”, but avoid using spatial descriptions like “the green fork on the top row”; the objects may be placed in different positions for your listener.</p>")
+            newText("You may say ")
                 .settings.after(newText(variable.targetPC).settings.bold())
                 .settings.after(newText(" or "))
                 .settings.after(newText(variable.targetCP).settings.bold())
@@ -215,7 +218,7 @@ Template(
 )
 
 newTrial( "exp_start" ,
-    newText("<p>Now the experiment begins.</p><p>First, you should listen to the audio and click on the described object.</p><p>Then, please describe the object in the box by speaking aloud.</p></p><p>After describing the object, press the <strong>Proceed</strong> button to continue.</p>")
+    newText("<p>Now the experiment begins.</p><p>First, you should listen to the audio and click on the described object. The audio will start playing automatically.</p><p>Then, please describe the object in the box by speaking aloud.</p></p><p>After describing the object, press the <strong>Proceed</strong> button to continue.</p>")
         .print()
     ,
     newButton("Continue")

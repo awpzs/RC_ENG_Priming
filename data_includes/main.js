@@ -4,7 +4,7 @@ var showProgressBar = false;
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/audios/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
 
-Sequence( "information", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp", "send", "final" )
+Sequence( "information", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp_start", "exp_block1", "rest", "exp_block2", "send", "final" )
 
 newTrial( "information" ,
     newHtml("information", "information.html")
@@ -25,7 +25,7 @@ newTrial( "identification" ,
         .log("final")
         .print()
     ,
-    newButton("Agree")
+    newButton("Continue")
         .settings.center()
         .print()
         .wait()
@@ -249,7 +249,7 @@ Template(
 )
 
 newTrial( "exp_start" ,
-    newText("<p>Now the experiment begins.</p><p>First, you should listen to the audio and click on the described object.</p><p>Then, please describe the object in the box by speaking aloud.</p></p><p>After describing the object, press the <strong>Proceed</strong> button to continue.</p>")
+    newText("<p>Now the experiment begins.</p>")
         .print()
     ,
     newButton("Continue")
@@ -260,16 +260,11 @@ newTrial( "exp_start" ,
 .log( "ID" , getVar("ID") )
 
 Template(
-    GetTable("fulldesign.csv")
+    GetTable("block_1.csv")
             .setGroupColumn("list") , variable =>
-    newTrial( "exp" ,
+    newTrial( "exp_block1" ,
             newText("exp_item", variable.item)
             ,
-            getText("exp_item").test.text("break")
-                .success(newText("<p>Now you can take a short break (1-2 mins).</p><p>Please click on <strong>Continue</strong> when you are ready.</p>").settings.center().print()
-                        ,
-                        newButton("Continue").settings.center().print().wait())
-                .failure(
             newAudio("description", variable.audio)
                 .play()
             ,
@@ -369,8 +364,7 @@ Template(
                 .add(175, 175, getImage("6") )
                 .add(350, 175, getImage("7") )
                 .add(525, 175, getImage("8") )
-                .add(0, 355, getText("production"))
-                .add(300, 425, getButton("proc"))
+                .add(300, 365, getButton("proc"))
                 .print()
             ,
             newSelector()
@@ -382,7 +376,7 @@ Template(
                 .stop()
             ,
             getMediaRecorder("recorder").test.recorded()
-                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print()))
+                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print())
     )
   .log( "ID"     , getVar("ID")    )
   .log("List", variable.list)
@@ -396,8 +390,153 @@ Template(
     .log("TargetObject", variable.target_object)
     .log("ExpTrials", variable.expTrials)
     .log("PrimePosition", variable.targetImg)
-    .log("TargetPosition", variable.BoxPos)
-)          
+    .log("TargetPosition", variable.boxPos)
+)
+
+newTrial( "rest" ,
+    newText("<p>Now you can take a break (1-2 mins).</p><p>Press <strong>Continue</strong> when you are ready.</p>")
+        .print()
+    ,
+    newButton("Continue")
+        .settings.center()
+        .print()
+        .wait()
+)
+.log( "ID" , getVar("ID") )
+
+Template(
+    GetTable("block_2.csv")
+            .setGroupColumn("list") , variable =>
+    newTrial( "exp_block2" ,
+            newText("exp_item", variable.item)
+            ,
+            newAudio("description", variable.audio)
+                .play()
+            ,
+            newImage("1", variable.pos1)
+                .size(170,170)
+            ,
+            newImage("2", variable.pos2)
+                .size(170,170)
+            ,
+            newImage("3", variable.pos3)
+                .size(170,170)
+            ,
+            newImage("4", variable.pos4)
+                .size(170,170)
+            ,
+            newImage("5", variable.pos5)
+                .size(170,170)
+            ,
+            newImage("6", variable.pos6)
+                .size(170,170)
+            ,
+            newImage("7", variable.pos7)
+                .size(170,170)
+            ,
+            newImage("8", variable.pos8)
+                .size(170,170)
+            ,
+            newCanvas(700,350)
+                .center()
+                .add(0, 0, getImage("1") )
+                .add(175, 0, getImage("2") )
+                .add(350, 0, getImage("3") )
+                .add(525, 0, getImage("4") )
+                .add(0, 175, getImage("5") )
+                .add(175, 175, getImage("6") )
+                .add(350, 175, getImage("7") )
+                .add(525, 175, getImage("8") )
+                .print()
+            ,
+            newSelector("imgSelect")
+                .add( getImage("1") , getImage("2"), getImage("3"), getImage("4"),
+                      getImage("5") , getImage("6"), getImage("7"), getImage("8") )
+                .log()
+                .wait()
+            ,
+            getAudio("description")
+                .wait("first")
+            ,
+            clear()
+            ,
+            newVar("box", variable.boxPos)
+            ,
+            newMediaRecorder("recorder", "audio")
+                .record()
+            ,
+            getVar("box").test.is("1")
+                .success(getImage("1").css("border", "solid 1px black"))
+                .failure(getImage("1"))
+            ,
+            getVar("box").test.is("2")
+                .success(getImage("2").css("border", "solid 1px black"))
+                .failure(getImage("2"))
+            ,
+            getVar("box").test.is("3")
+                .success(getImage("3").css("border", "solid 1px black"))
+                .failure(getImage("3"))
+            ,
+            getVar("box").test.is("4")
+                .success(getImage("4").css("border", "solid 1px black"))
+                .failure(getImage("4"))
+            ,
+            getVar("box").test.is("5")
+                .success(getImage("5").css("border", "solid 1px black"))
+                .failure(getImage("5"))
+            ,
+            getVar("box").test.is("6")
+                .success(getImage("6").css("border", "solid 1px black"))
+                .failure(getImage("6"))
+            ,
+            getVar("box").test.is("7")
+                .success(getImage("7").css("border", "solid 1px black"))
+                .failure(getImage("7"))
+            ,
+            getVar("box").test.is("8")
+                .success(getImage("8").css("border", "solid 1px black"))
+                .failure(getImage("8"))
+            ,
+            newButton("proc", "Proceed")
+            ,
+            newCanvas(700,500)
+                .center()
+                .add(0, 0, getImage("1") )
+                .add(175, 0, getImage("2") )
+                .add(350, 0, getImage("3") )
+                .add(525, 0, getImage("4") )
+                .add(0, 175, getImage("5") )
+                .add(175, 175, getImage("6") )
+                .add(350, 175, getImage("7") )
+                .add(525, 175, getImage("8") )
+                .add(300, 365, getButton("proc"))
+                .print()
+            ,
+            newSelector()
+                .add(getButton("proc"))
+                .log()
+                .wait()
+            ,
+            getMediaRecorder("recorder")
+                .stop()
+            ,
+            getMediaRecorder("recorder").test.recorded()
+                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print())
+    )
+  .log( "ID"     , getVar("ID")    )
+  .log("List", variable.list)
+    .log("Order", variable.order)
+    .log("Item", variable.item)
+    .log("Condition", variable.condition)
+    .log("Prime", variable.prime)
+    .log("NounRepetition", variable.noun_repetition)
+    .log("PrimeDescription", variable.prime_description)
+    .log("TargetDescription", variable.target_description)
+    .log("TargetObject", variable.target_object)
+    .log("ExpTrials", variable.expTrials)
+    .log("PrimePosition", variable.targetImg)
+    .log("TargetPosition", variable.boxPos)
+)
 
 SendResults( "send" )
 
@@ -412,7 +551,3 @@ newTrial( "final" ,
     newButton("void")
         .wait()
 )
-
-
-
-

@@ -1,10 +1,10 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this line here)
+var showProgressBar = false;
 //PennController.DebugOff()
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/audios/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
 
-//Sequence( "information", "identification", "recording_information", "initRecorder", "prac1_start", "prac_1", "prac2_start", "prac_2", "exp_start", "exp", "send", "final" )
-Sequence( "recording_information", "initRecorder", "instruction", "prac", "send", "final" )
+Sequence( "information", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp", "send", "final" )
 
 newTrial( "information" ,
     newHtml("information", "information.html")
@@ -20,7 +20,7 @@ newTrial( "identification" ,
     newText("<p>Please provide your ID before proceeding to the instructions.</p>")
         .print()
     ,
-    newTextInput("inputID", "Your ID")
+    newTextInput("inputID", GetURLParameter("id"))
         .settings.center()
         .log("final")
         .print()
@@ -37,8 +37,7 @@ newTrial( "identification" ,
 .log( "ID" , getVar("ID") )
 
 newTrial("recording_information" ,
-    newText("<p><strong>Important:</strong></p><p>Your responses will be audio recorded during the experiment. Please complete this experiment in a quiet place, and make your voice loud and clear.</p><p>Please stay focused during the experiment, and finish it in one go. You will be able to take a brief break (1-2 mins), where specified.</p><p>You will not be able to return to this study if you closed or refreshed this webpage.</p>")
-        .settings.center()
+    newText("<p><strong>Important:</strong></p><p>You will hear audio descriptions during the experiment, so please adjust the sound volume to a comfortable level before starting the experiment.</p><p>Your responses will be audio recorded during the experiment. Please complete this experiment in a quiet place, and make your voice loud and clear.</p><p>Please stay focused during the experiment, and finish it in one go. You will be able to take a brief break (1-2 mins), where specified.</p><p>You will not be able to return to this study if you closed or refreshed this webpage.</p>")
         .print()
     ,
     newButton("Continue")
@@ -68,71 +67,82 @@ Template(
     GetTable("prac.csv")
             .setGroupColumn("list") , variable =>
     newTrial( "prac" ,
-            newText("<p>Please click on “Listen” to listen to an audio, and then use your mouse to click on the object that’s just been described.</p><p>Once you’ve selected an object, you cannot change your response.</p><p>Please listen to descriptions carefully and choose the object accurately.</p>")
-                .settings.center()
+            newText("prac_item", variable.item)
+            ,
+            newImage("1", variable.pos1)
+                .size(170,170)
+            ,
+            newImage("2", variable.pos2)
+                .size(170,170)
+            ,
+            newImage("3", variable.pos3)
+                .size(170,170)
+            ,
+            newImage("4", variable.pos4)
+                .size(170,170)
+            ,
+            newImage("5", variable.pos5)
+                .size(170,170)
+            ,
+            newImage("6", variable.pos6)
+                .size(170,170)
+            ,
+            newImage("7", variable.pos7)
+                .size(170,170)
+            ,
+            newImage("8", variable.pos8)
+                .size(170,170)
+            ,
+            newCanvas(700,350)
+                .center()
+                .add(0, 0, getImage("1") )
+                .add(175, 0, getImage("2") )
+                .add(350, 0, getImage("3") )
+                .add(525, 0, getImage("4") )
+                .add(0, 175, getImage("5") )
+                .add(175, 175, getImage("6") )
+                .add(350, 175, getImage("7") )
+                .add(525, 175, getImage("8") )
                 .print()
             ,
-            newButton("listen", "Listen")
-                .settings.center()
-                .print()
+            getText("prac_item").test.text("p1")
+                .success(newText("In every trial, you’ll see a display of 8 objects. Here you’ve just heard&nbsp;")
+                        .settings.after(newText("&ldquo;"))
+                        .settings.after(newText("prime_description", variable.prime_description).settings.center().css("font-size", "small"))
+                        .settings.after(newText("&#8221;."))
+                        .settings.center()
+                        .css("font-size", "small")
+                        .print()            
+                        ,
+                    newText("Please click on the object described. You cannot change your response, so please listen carefully.")
+                        .settings.center()
+                        .css("font-size", "small")
+                        .print())
+                .failure(newText("Listen carefully. Click on the object described.")
+                        .settings.center()
+                        .css("font-size", "small")
+                        .print())            
+            ,
+            newTimer("delay", 2000)
+                .start()
                 .wait()
-            ,
-            getButton("listen")
-                .remove()
             ,
             newAudio("description", variable.audio)
                 .play()
-            ,
-            newImage("1", variable.pos1)
-                .size(245,245)
-            ,
-            newImage("2", variable.pos2)
-                .size(245,245)
-            ,
-            newImage("3", variable.pos3)
-                .size(245,245)
-            ,
-            newImage("4", variable.pos4)
-                .size(245,245)
-            ,
-            newImage("5", variable.pos5)
-                .size(245,245)
-            ,
-            newImage("6", variable.pos6)
-                .size(245,245)
-            ,
-            newImage("7", variable.pos7)
-                .size(245,245)
-            ,
-            newImage("8", variable.pos8)
-                .size(245,245)
-            ,
-            newCanvas(1000,550)
-                .center()
-                .add(0, 0, getImage("1") )
-                .add(250, 0, getImage("2") )
-                .add(500, 0, getImage("3") )
-                .add(750, 0, getImage("4") )
-                .add(0, 250, getImage("5") )
-                .add(250, 250, getImage("6") )
-                .add(500, 250, getImage("7") )
-                .add(750, 250, getImage("8") )
-                .print()
             ,
             newSelector("imgSelect")
                 .add( getImage("1") , getImage("2"), getImage("3"), getImage("4"),
                       getImage("5") , getImage("6"), getImage("7"), getImage("8") )
                 .log()
-                .wait()
+                .wait()                        
             ,
             getAudio("description")
                 .wait("first")
             ,
             clear()
             ,
-            newText("<p>Now it’s your turn - please describe the object that’s in the box, so your listener can identify the object.</p><p>When you finished describing the object, click on “Proceed” to proceed.</p>")
-                .settings.center()
-                .print()
+            newText("production", "<p>Now it’s your turn - please describe the object that’s in the box, so that your listener can identify the object.</p><p>When you finished describing the object, click on “Proceed” to proceed.</p>")
+                .css("font-size", "small")
             ,
             newVar("box", variable.boxPos)
             ,
@@ -173,16 +183,18 @@ Template(
             ,
             newButton("proc", "Proceed")
             ,
-            newCanvas(1000,550)
+            newCanvas(700,500)
+                .center()
                 .add(0, 0, getImage("1") )
-                .add(250, 0, getImage("2") )
-                .add(500, 0, getImage("3") )
-                .add(750, 0, getImage("4") )
-                .add(0, 250, getImage("5") )
-                .add(250, 250, getImage("6") )
-                .add(500, 250, getImage("7") )
-                .add(750, 250, getImage("8") )
-                .add(495, 505, getButton("proc"))
+                .add(175, 0, getImage("2") )
+                .add(350, 0, getImage("3") )
+                .add(525, 0, getImage("4") )
+                .add(0, 175, getImage("5") )
+                .add(175, 175, getImage("6") )
+                .add(350, 175, getImage("7") )
+                .add(525, 175, getImage("8") )
+                .add(0, 355, getText("production"))
+                .add(300, 425, getButton("proc"))
                 .print()
             ,
             newSelector()
@@ -198,19 +210,35 @@ Template(
             ,
             clear()
             ,
-            newText("You may say ")
-                .settings.after(newText(variable.targetPC).settings.bold())
-                .settings.after(newText("&nbsp;or&nbsp;"))
-                .settings.after(newText(variable.targetCP).settings.bold())
-                .settings.after(newText(", but avoid using spatial descriptions like&nbsp;"))
-                .settings.after(newText(variable.targetSP).settings.bold())
-                .settings.after(newText(";"))
-                .settings.center()
-                .print()
-            ,
-            newText("the objects may be placed in different positions for your listener.")
-                .settings.center()
-                .print()
+            getText("prac_item").test.text("p1")
+                .success(newText("You may say ")
+                            .settings.after(newText(variable.targetPC).settings.bold())
+                            .settings.after(newText("&nbsp;or&nbsp;"))
+                            .settings.after(newText(variable.targetCP).settings.bold())
+                            .settings.after(newText("."))
+                            .print()
+                        ,
+                        newText("But avoid mentioning the location (e.g., ")
+                            .settings.after(newText(variable.targetSP))
+                            .settings.after(newText(")."))
+                            .print()
+                        ,
+                        newText("The objects may be positioned differently for your listener.")
+                            .print())
+                .failure(newText("As before, you may say ")
+                            .settings.after(newText(variable.targetPC).settings.bold())
+                            .settings.after(newText("&nbsp;or&nbsp;"))
+                            .settings.after(newText(variable.targetCP).settings.bold())
+                            .settings.after(newText("."))
+                            .print()
+                        ,
+                        newText("But avoid mentioning the location (e.g., ")
+                            .settings.after(newText(variable.targetSP))
+                            .settings.after(newText(")."))
+                            .print()
+                        ,
+                        newText("The objects may be arranged differently for your listener.")
+                            .print())
             ,
             newButton("Continue")
                 .settings.center()
@@ -221,7 +249,7 @@ Template(
 )
 
 newTrial( "exp_start" ,
-    newText("<p>Now the experiment begins.</p><p>First, you should listen to the audio and click on the described object. The audio will start playing automatically.</p><p>Then, please describe the object in the box by speaking aloud.</p></p><p>After describing the object, press the <strong>Proceed</strong> button to continue.</p>")
+    newText("<p>Now the experiment begins.</p><p>First, you should listen to the audio and click on the described object.</p><p>Then, please describe the object in the box by speaking aloud.</p></p><p>After describing the object, press the <strong>Proceed</strong> button to continue.</p>")
         .print()
     ,
     newButton("Continue")
@@ -232,46 +260,53 @@ newTrial( "exp_start" ,
 .log( "ID" , getVar("ID") )
 
 Template(
-    GetTable("prac.csv")
+    GetTable("fulldesign.csv")
             .setGroupColumn("list") , variable =>
     newTrial( "exp" ,
+            newText("exp_item", variable.item)
+            ,
+            getText("exp_item").test.text("break")
+                .success(newText("<p>Now you can take a short break (1-2 mins).</p><p>Please click on <strong>Continue</strong> when you are ready.</p>").settings.center().print()
+                        ,
+                        newButton("Continue").settings.center().print().wait())
+                .failure(
             newAudio("description", variable.audio)
                 .play()
             ,
             newImage("1", variable.pos1)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("2", variable.pos2)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("3", variable.pos3)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("4", variable.pos4)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("5", variable.pos5)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("6", variable.pos6)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("7", variable.pos7)
-                .size(245,245)
+                .size(170,170)
             ,
             newImage("8", variable.pos8)
-                .size(245,245)
+                .size(170,170)
             ,
-            newCanvas(1000,550)
+            newCanvas(700,350)
                 .center()
                 .add(0, 0, getImage("1") )
-                .add(250, 0, getImage("2") )
-                .add(500, 0, getImage("3") )
-                .add(750, 0, getImage("4") )
-                .add(0, 250, getImage("5") )
-                .add(250, 250, getImage("6") )
-                .add(500, 250, getImage("7") )
-                .add(750, 250, getImage("8") )
+                .add(175, 0, getImage("2") )
+                .add(350, 0, getImage("3") )
+                .add(525, 0, getImage("4") )
+                .add(0, 175, getImage("5") )
+                .add(175, 175, getImage("6") )
+                .add(350, 175, getImage("7") )
+                .add(525, 175, getImage("8") )
                 .print()
             ,
             newSelector("imgSelect")
@@ -324,16 +359,18 @@ Template(
             ,
             newButton("proc", "Proceed")
             ,
-            newCanvas(1000,550)
+            newCanvas(700,500)
+                .center()
                 .add(0, 0, getImage("1") )
-                .add(250, 0, getImage("2") )
-                .add(500, 0, getImage("3") )
-                .add(750, 0, getImage("4") )
-                .add(0, 250, getImage("5") )
-                .add(250, 250, getImage("6") )
-                .add(500, 250, getImage("7") )
-                .add(750, 250, getImage("8") )
-                .add(495, 505, getButton("proc"))
+                .add(175, 0, getImage("2") )
+                .add(350, 0, getImage("3") )
+                .add(525, 0, getImage("4") )
+                .add(0, 175, getImage("5") )
+                .add(175, 175, getImage("6") )
+                .add(350, 175, getImage("7") )
+                .add(525, 175, getImage("8") )
+                .add(0, 355, getText("production"))
+                .add(300, 425, getButton("proc"))
                 .print()
             ,
             newSelector()
@@ -345,9 +382,21 @@ Template(
                 .stop()
             ,
             getMediaRecorder("recorder").test.recorded()
-                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print())
+                .failure(newText("Sorry, there seems to be something wrong with your microphone. Please stop the experiment, and contact the researcher.").settings.center().print()))
     )
   .log( "ID"     , getVar("ID")    )
+  .log("List", variable.list)
+    .log("Order", variable.order)
+    .log("Item", variable.item)
+    .log("Condition", variable.condition)
+    .log("Prime", variable.prime)
+    .log("NounRepetition", variable.noun_repetition)
+    .log("PrimeDescription", variable.prime_description)
+    .log("TargetDescription", variable.target_description)
+    .log("TargetObject", variable.target_object)
+    .log("ExpTrials", variable.expTrials)
+    .log("PrimePosition", variable.targetImg)
+    .log("TargetPosition", variable.BoxPos)
 )          
 
 SendResults( "send" )
@@ -356,11 +405,14 @@ newTrial( "final" ,
     newText("<p>Thank you very much for your participation!</p>")
         .print()
     ,
-    newText("<p><a href='https://stir.ac.uk' href='_blank'>Click here to finish the experiment</a></p>")
+    newText("<p><a href='https://stir.ac.uk' href='_blank'>Click here to validate your participation and finish the experiment</a></p>")
         .settings.center()
         .print()
     ,
     newButton("void")
         .wait()
 )
+
+
+
 

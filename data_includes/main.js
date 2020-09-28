@@ -4,7 +4,7 @@ var showProgressBar = false;
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/audios/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
 
-Sequence( "information", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp_start", "exp_block1", "rest", "exp_block2", "send", "final" )
+Sequence( "information", "survey", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp_start", "exp_block1", "rest", "exp_block2", "send", "final" )
 
 newTrial( "information" ,
     newHtml("information", "information.html")
@@ -16,8 +16,20 @@ newTrial( "information" ,
         .wait()
 )
 
+newTrial( "survey" ,
+    newHtml("questionnaire", "survey.html")
+        .print()
+    ,
+    newButton("Start")
+        .settings.center()
+        .print()
+        .wait(getHtml("questionnaire").test.complete()
+            .failure(getHtml("questionnaire").warn()))
+)
+.log( "ID", PennController.GetURLParameter("id") )
+
 newTrial( "identification" ,
-    newText("<p>Please provide your ID before proceeding to the instructions.</p>")
+    newText("<p>Below is your unique ID for this experiment. Press <strong>Continue</strong> to proceed.</p>")
         .print()
     ,
     newTextInput("inputID", GetURLParameter("id"))
@@ -388,6 +400,8 @@ Template(
     .log("PrimeDescription", variable.prime_description)
     .log("TargetDescription", variable.target_description)
     .log("TargetObject", variable.target_object)
+    .log("RepeatedPrime", variable.repeated_prime)
+    .log("NonRepeatedPrime", variable.non_repeated_prime)
     .log("ExpTrials", variable.expTrials)
     .log("PrimePosition", variable.targetImg)
     .log("TargetPosition", variable.boxPos)
@@ -533,6 +547,8 @@ Template(
     .log("PrimeDescription", variable.prime_description)
     .log("TargetDescription", variable.target_description)
     .log("TargetObject", variable.target_object)
+    .log("RepeatedPrime", variable.repeated_prime)
+    .log("NonRepeatedPrime", variable.non_repeated_prime)
     .log("ExpTrials", variable.expTrials)
     .log("PrimePosition", variable.targetImg)
     .log("TargetPosition", variable.boxPos)
@@ -544,7 +560,7 @@ newTrial( "final" ,
     newText("<p>Thank you very much for your participation!</p>")
         .print()
     ,
-    newText("<p><a href='https://stir.ac.uk' href='_blank'>Click here to validate your participation and finish the experiment</a></p>")
+    newText("<p><a href='https://stirling.sona-systems.com/webstudy_credit.aspx?experiment_id=1903&credit_token=73dbad39838a446598271bf8fdf6da8b&survey_code="+GetURLParameter("id")+"' href='_blank'>Click here to validate your participation and finish the experiment</a></p>")
         .settings.center()
         .print()
     ,

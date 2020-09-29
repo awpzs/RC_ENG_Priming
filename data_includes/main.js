@@ -29,6 +29,10 @@ newTrial( "survey" ,
 .log( "ID", PennController.GetURLParameter("id") )
 
 newTrial( "identification" ,
+    newText("rID", "")
+        .settings.text(getFunction("generateID").call())
+        .print()
+    ,
     newText("<p>Below is your unique ID for this experiment. Press <strong>Continue</strong> to proceed.</p>")
         .print()
     ,
@@ -49,7 +53,7 @@ newTrial( "identification" ,
 .log( "ID" , getVar("ID") )
 
 newTrial("recording_information" ,
-    newText("<p><strong>Important:</strong></p><p>You will hear audio descriptions during the experiment, so please adjust the sound volume to a comfortable level before starting the experiment.</p><p>Your responses will be audio recorded during the experiment. Please complete this experiment in a quiet place, and make your voice loud and clear.</p><p>Please stay focused during the experiment, and finish it in one go. You will be able to take a brief break (1-2 mins), where specified.</p><p>You will not be able to return to this study if you closed or refreshed this webpage.</p>")
+    newText("<p><strong>Important:</strong></p><p>You will hear audio descriptions during the experiment, so please adjust the sound volume to a comfortable level before starting the experiment.</p><p>Your responses will be audio recorded during the experiment. Please complete this experiment in a quiet place.</p><p>Please stay focused during the experiment, and finish it in one go. You will be able to take a brief break (1-2 mins), where specified.</p><p>You will not be able to return to this study if you closed or refreshed this webpage.</p>")
         .print()
     ,
     newButton("Continue")

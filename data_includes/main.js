@@ -278,9 +278,6 @@ Template(
     newTrial( "exp_block1" ,
             newText("exp_item", variable.item)
             ,
-            newAudio("description", variable.audio)
-                .play()
-            ,
             newImage("1", variable.pos1)
                 .size(170,170)
             ,
@@ -316,6 +313,13 @@ Template(
                 .add(350, 175, getImage("7") )
                 .add(525, 175, getImage("8") )
                 .print()
+            ,
+            newTimer("delay", 2000)
+                .start()
+                .wait()
+            ,
+            newAudio("description", variable.audio)
+                .play()
             ,
             newSelector("imgSelect")
                 .add( getImage("1") , getImage("2"), getImage("3"), getImage("4"),
@@ -425,9 +429,6 @@ Template(
     newTrial( "exp_block2" ,
             newText("exp_item", variable.item)
             ,
-            newAudio("description", variable.audio)
-                .play()
-            ,
             newImage("1", variable.pos1)
                 .size(170,170)
             ,
@@ -463,6 +464,13 @@ Template(
                 .add(350, 175, getImage("7") )
                 .add(525, 175, getImage("8") )
                 .print()
+            ,
+            newTimer("delay", 2000)
+                .start()
+                .wait()
+            ,
+            newAudio("description", variable.audio)
+                .play()
             ,
             newSelector("imgSelect")
                 .add( getImage("1") , getImage("2"), getImage("3"), getImage("4"),

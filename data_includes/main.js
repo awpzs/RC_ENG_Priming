@@ -3,6 +3,7 @@ var showProgressBar = false;
 //PennController.DebugOff()
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/audios/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
+PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images2/")
 
 Sequence( "information", "survey", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp_start", "exp_block1", "rest", "exp_block2", "send", "final" )
 
@@ -29,11 +30,7 @@ newTrial( "survey" ,
 .log( "ID", PennController.GetURLParameter("id") )
 
 newTrial( "identification" ,
-    newText("rID", "")
-        .settings.text(getFunction("generateID").call())
-        .print()
-    ,
-    newText("<p>Below is your unique ID for this experiment. Press <strong>Continue</strong> to proceed.</p>")
+    newText("<p>Below is your unique ID for this experiment.</p><p>Please take a note of it in case you need it as a reference.</p><p>Press <strong>Continue</strong> to proceed.</p>")
         .print()
     ,
     newTextInput("inputID", GetURLParameter("id"))
@@ -62,7 +59,7 @@ newTrial("recording_information" ,
         .wait()    
 )
 
-InitiateRecorder("https://langprolab/pcibex/index.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
+InitiateRecorder("https://langprolab.stir.ac.uk/pcibex/index.php", "Please grant expt.pcibex.net access to your microphone.").label("initRecorder")
 
 Template(
     GetTable("instructions.csv")
@@ -562,6 +559,9 @@ SendResults( "send" )
 
 newTrial( "final" ,
     newText("<p>Thank you very much for your participation!</p>")
+        .print()
+    ,
+    newText("<p>If you were asked to download a copy of the recordings on the last page, please send the file and your unique ID to <strong>shi.zhang[at]stir.ac.uk.</strong></p><p>Otherwise, please click on the link below to validate your participation.</p>")
         .print()
     ,
     newText("<p><a href='https://stirling.sona-systems.com/webstudy_credit.aspx?experiment_id=1903&credit_token=73dbad39838a446598271bf8fdf6da8b&survey_code="+GetURLParameter("id")+"' href='_blank'>Click here to validate your participation and finish the experiment</a></p>")

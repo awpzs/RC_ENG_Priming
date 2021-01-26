@@ -1,25 +1,30 @@
 PennController.ResetPrefix(null) // Shorten command names (keep this line here)
 var showProgressBar = false;
-//PennController.DebugOff()
+PennController.DebugOff()
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/audios/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images/")
 PennController.AddHost("https://raw.githubusercontent.com/awpzs/RC_ENG_Priming/master/images2/")
 
-Sequence( "information", "survey", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp_start", "exp_block1", "rest", "exp_block2", "send", "final" )
+Sequence( "setcounter", "information", "survey", "identification", "recording_information", "initRecorder", "instruction", "prac", "exp_start", "exp_block1", "rest", "exp_block2", "send", "final" )
+
+PennController.SetCounter( "setcounter" )
 
 newTrial( "information" ,
     newHtml("information", "information.html")
         .print()
+        .log()
     ,
-    newButton("Agree")
+    newButton("Continue")
         .settings.center()
         .print()
-        .wait()
+        .wait(getHtml("information").test.complete()
+            .failure(getHtml("information").warn()))
 )
 
 newTrial( "survey" ,
     newHtml("questionnaire", "survey.html")
         .print()
+        .log()
     ,
     newButton("Start")
         .settings.center()
@@ -63,6 +68,7 @@ InitiateRecorder("https://langprolab.stir.ac.uk/pcibex/index.php", "Please grant
 
 Template(
     GetTable("instructions.csv")
+            .setGroupColumn("list")//.filter( variable => variable.list == 3 ) 
             , variable =>
     newTrial( "instruction" ,
         newHtml("information", variable.insPage)
@@ -78,7 +84,8 @@ Template(
 
 Template(
     GetTable("prac.csv")
-            .setGroupColumn("list") , variable =>
+            .setGroupColumn("list")//.filter( variable => variable.list == 3 ) 
+            , variable =>
     newTrial( "prac" ,
             newText("prac_item", variable.item)
             ,
@@ -274,7 +281,8 @@ newTrial( "exp_start" ,
 
 Template(
     GetTable("block_1.csv")
-            .setGroupColumn("list") , variable =>
+            .setGroupColumn("list")//.filter( variable => variable.list == 3 ) 
+            , variable =>
     newTrial( "exp_block1" ,
             newText("exp_item", variable.item)
             ,
@@ -425,7 +433,8 @@ newTrial( "rest" ,
 
 Template(
     GetTable("block_2.csv")
-            .setGroupColumn("list") , variable =>
+            .setGroupColumn("list")//.filter( variable => variable.list == 3 ) 
+            , variable =>
     newTrial( "exp_block2" ,
             newText("exp_item", variable.item)
             ,
@@ -567,13 +576,22 @@ SendResults( "send" )
 
 newTrial( "final" ,
     newText("<p>Thank you very much for your participation!</p>")
+        .settings.center()
         .print()
     ,
     newText("<p>If you were asked to download a copy of the recordings on the last page, please send the file and your unique ID to <strong>shi.zhang[at]stir.ac.uk.</strong></p><p>Otherwise, please click on the link below to validate your participation.</p>")
+        .settings.center()
         .print()
     ,
     newText("<p><a href='https://stirling.sona-systems.com/webstudy_credit.aspx?experiment_id=1903&credit_token=73dbad39838a446598271bf8fdf6da8b&survey_code="+GetURLParameter("id")+"' href='_blank'>Click here to validate your participation and finish the experiment</a></p>")
         .settings.center()
+        .print()
+    ,
+    newText("<p>Please see below for a debriefing of this study.</p>")
+        .settings.center()
+        .print()
+    ,
+    newHtml("debriefing", "debrief.html")
         .print()
     ,
     newButton("void")
